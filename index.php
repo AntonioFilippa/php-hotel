@@ -16,32 +16,58 @@ $hotels = [
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light text-center">
         <a class="navbar-brand" href="#">Lista Hotel</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-    </nav>
+        <button class="navbar-toggler" 
+        type="button" 
+        data-toggle="collapse" 
+        data-target="#navbarNav" 
+        aria-controls="navbarNav" 
+        aria-expanded="false" 
+        aria-label="Toggle navigation">
+            
+        <span class="navbar-toggler-icon"></span>
+        
+    </button>
+   
+</nav>
 
-    <div class="container mt-5">
-        <h2 class="mb-4">Cerca Hotel</h2>
-        <form method="GET" class="mb-5">
-            <div class="form-row align-items-center">
-                <div class="col-auto my-1">
-                    <div class="custom-control custom-checkbox mr-sm-2">
-                        <input type="checkbox" class="custom-control-input" id="parking" name="parking" value="1">
-                        <label class="custom-control-label" for="parking">Solo con parcheggio</label>
-                    </div>
-                </div>
-                <div class="col-auto my-1">
-                    <label class="sr-only" for="vote">Voto minimo</label>
-                    <input type="number" class="form-control" id="vote" name="vote" placeholder="Voto minimo" min="1" max="5">
-                </div>
-                <div class="col-auto my-1">
-                    <button type="submit" class="btn btn-primary">Cerca</button>
-                </div>
-            </div>
-        </form>
+    <div class="container mt-5 text-center">
+        <h1 class="mb-4">Cerca Hotel</h1>
+       <form action ="index.php" method="GET" class="mb-5">
+   
+       <div class="form-row">
+   
+       <div class="col-md-4 mb-3">
+   
+       <div class="custom-control custom-checkbox">
+   
+       <input type="checkbox" class="custom-control-input" id="parking" name="parking" value="1" 
+       <?php if (isset($_GET['parking'])) echo 'checked'; ?>>
+   
+       <label class="custom-control-label mt-5" for="parking">Solo con parcheggio</label>
+   
+    </div>
+   
+</div>
+
+<div class="col-md-4 mb-3">
+
+<label for="vote">Voto minimo</label>
+
+<input type="number" class="form-control" id="vote" name="vote" placeholder="Voto minimo" min="1" max="5" 
+<?php if (isset($_GET['vote'])) echo 'value="' . htmlspecialchars($_GET['vote']) . '"'; ?>>
+</div>
+
+<div class="col-md-4 mb-3 align-self-end">
+
+<button type="submit" class="btn btn-primary">Cerca</button>
+
+</div>
+
+</div>
+
+</form>
 
         <table class="table table-striped">
             <thead>
@@ -55,17 +81,30 @@ $hotels = [
             </thead>
              <tbody>
                 <?php
-                $filteredHotels = $hotels;
-                if (isset($_GET['parking'])) {
-                    $filteredHotels = array_filter($filteredHotels, function($hotel) {
-                        return $hotel['parking'] === true;
-                    });
-                }
-                if (isset($_GET['vote']) && $_GET['vote'] !== '') {
-                    $vote = (int)$_GET['vote'];
-                    $filteredHotels = array_filter($filteredHotels, function($hotel) use ($vote) {
-                        return $hotel['vote'] >= $vote;
-                    });
+                $filteredHotels = [];
+
+                foreach ($hotels as $hotel) {
+
+                    $includeHotel = true;
+
+                    if (isset($_GET['parking']) && $hotel['parking'] !== true) {
+
+                        $includeHotel = false;
+
+                    }
+
+                    if (isset($_GET['vote']) && $_GET['vote'] !== '' && $hotel['vote'] < (int)$_GET['vote']) {
+
+                        $includeHotel = false;
+
+                    }
+
+                    if ($includeHotel) {
+
+                        $filteredHotels[] = $hotel;
+
+                    }
+
                 }
 
                 foreach ($filteredHotels as $hotel) {
@@ -77,6 +116,7 @@ $hotels = [
                     echo "<td>" . htmlspecialchars($hotel['distance_to_center']) . "</td>";
                     echo "</tr>";
                 }
+                // DICHIARO END FOREACH
                 ?>
             </tbody>
         </table>
@@ -84,7 +124,7 @@ $hotels = [
 
     <footer class="footer mt-auto py-3 bg-light">
         <div class="container">
-            <span class="text-muted">Posto al piede della pagina.</span>
+            <span class="text-muted">Footer Hotel</span>
         </div>
     </footer>
 
